@@ -1,10 +1,17 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app/module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new Logger(),
+  });
+  app.useGlobalPipes(new ValidationPipe());
+  
   const port = 3000;
   await app.listen(port);
+
   console.log(`当前运行环境：http://localhost:${port}`)
 }
+
 bootstrap();
