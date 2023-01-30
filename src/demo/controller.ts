@@ -53,4 +53,10 @@ export class DemoController {
   schemaSave(@UploadedFile() file: Express.Multer.File, @Body() body: SchemaDto): Promise<ResponseDataFormat> {
     return this.demoService.schemaSave(file, body);
   }
+
+  @Post('schema/update')
+  @UseInterceptors(FileInterceptor('schemaFile'))
+  schemaUpdate(@UploadedFile() file: Express.Multer.File, @Body() body: SchemaDto): Promise<ResponseDataFormat> {
+    return this.demoService.schemaUpdate(file, body);
+  }
 }
