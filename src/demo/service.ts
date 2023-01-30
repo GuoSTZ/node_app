@@ -1,30 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DemoDto, DemoDtoByName } from './dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import responseDataFormat, { ResponseDataFormat } from '../common/responseDataFormat';
 import formAddJson from './databse/form.add.json';
 import formEditJson from './databse/form.edit.json';
 import detailJson from './databse/detail.json';
+import { User } from './entity';
 
 @Injectable()
 export class DemoService {
   private readonly logger = new Logger(DemoService.name);
 
-  getDemo(): ResponseDataFormat {
-    // 数据库操作
-    const data = {
-      items: [
-        {
-          id: '1',
-          name: 'guosheng',
-          age: 1,
-          address: '杭州',
-        },
-      ],
-      current: 1,
-      pageSize: 10,
-      total: 1,
-    }
-    const result = { data };
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) { }
+
+  async getDemo(): Promise<ResponseDataFormat> {
+    const [items, total] = await this.userRepository.findAndCount();
+    const result = { data: {items, total, current: 1, pageSize: 10} };
     return responseDataFormat(result);
   }
 
@@ -38,44 +32,31 @@ export class DemoService {
     return responseDataFormat(result);
   }
 
-  getItem(): ResponseDataFormat {
-    const result = {
-      data: {
-        id: '1',
-        name: 'guosheng',
-        age: 1,
-        address: '杭州',
-      }
-    };
+  async getItem(id: number): Promise<ResponseDataFormat> {
+    const data = await this.userRepository.findOne({where: {id}})
+    return responseDataFormat({data});
+  }
+
+  delete(ids: number[]): ResponseDataFormat {
+    ids.forEach((id: number) => {
+      this.userRepository.query(`delete from user where id = ${id}`)
+    })
+    return responseDataFormat({data: null});
+  }
+
+  async save(user: User): Promise<ResponseDataFormat> {
+    const isExist = await this.userRepository.exist({where: {name: user.name}})
+    let result;
+    if(isExist) {
+      result = { code: -1, data: null, message: "名称重复" }
+    } else {
+      result = this.userRepository.save(user);
+    }
     return responseDataFormat(result);
   }
 
-  delete(id: number|string): ResponseDataFormat {
-    this.logger.log(`Query 'id' is ${id}`);
-    const result = id ? { data: null } : { code: -1, data: null, message: "Query 'id' is empty!" };
+  update(user: User): ResponseDataFormat {
+    const result: any = this.userRepository.update(user.id, user);
     return responseDataFormat(result);
-  }
-
-  getDemoById(id?: number): ResponseDataFormat {
-    this.logger.log(`Query 'id' is ${id}`);
-    const result = id ? { data: `Query 'id' is ${id}` } : { code: -1, data: null, message: "Query 'id' is empty!" };
-    return responseDataFormat(result);
-  }
-
-  updateDemo(demo: DemoDto): ResponseDataFormat {
-    this.logger.log(`Query 'name' is ${demo.name}`);
-    const result = demo.name ? { data: `Query 'name' is ${demo.name}` } : { code: -1, data: null, message: "Query 'name' is empty!" };
-    return responseDataFormat({ data: `${demo.name} 更新成功！` });
-  }
-
-  updateDemoByName(demo: DemoDtoByName): ResponseDataFormat {
-    this.logger.log(`Query 'name' is ${demo.name}`);
-    return responseDataFormat({ data: `${demo.name} 更新成功！` });
-  }
-
-  updateDemoInName(name?: string): ResponseDataFormat {
-    this.logger.log(`Query 'name' is ${name}`);
-    const result = name ? { data: `Query 'name' is ${name}` } : { code: -1, data: null, message: "Query 'name' is empty!" };
-    return responseDataFormat({ data: `${name} 更新成功！` });
   }
 }

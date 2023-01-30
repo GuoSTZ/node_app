@@ -1,13 +1,17 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class DemoDto {
+  id: number;
   @IsNotEmpty()
-  id: number|string;
-  name?: string;
+  name: string;
+  // @IsNumber()
+  age?: number;
+  address?: string;
+  updateTime?: Date;
+  createTime?: Date;
 }
 
-export class DemoDtoByName {
+export class DemoDeleteParams {
   @IsNotEmpty()
-  @IsString()
-  name: string;
+  ids: number[];
 }
