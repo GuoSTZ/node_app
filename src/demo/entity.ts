@@ -28,3 +28,29 @@ export class User {
   @CreateDateColumn()
   createTime?: Date;
 }
+
+@Entity()
+export class Schema {
+  @PrimaryGeneratedColumn({
+    comment: "自增id"
+  })
+  id: number;
+
+  @Column({ type: 'varchar' })
+  schemaKey: string;
+
+  @Column({ type: 'varchar' })
+  schemaName?: string;
+
+  @Column({ type: 'varchar', length: 10000 })
+  schemaFile?: string;
+
+  @Column({ type: 'varchar' })
+  schemaFileName?: string;
+
+  @UpdateDateColumn()
+  updateTime?: Date;
+
+  @CreateDateColumn()
+  createTime?: Date;
+}

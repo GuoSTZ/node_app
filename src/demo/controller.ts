@@ -1,7 +1,8 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { DemoService } from './service';
 import { ResponseDataFormat } from '../common/responseDataFormat';
-import { DemoDto, DemoDeleteParams } from './dto';
+import { DemoDto, DemoDeleteParams, SchemaDto } from './dto';
 
 @Controller('demo')
 export class DemoController {
@@ -12,14 +13,9 @@ export class DemoController {
     return this.demoService.getDemo();
   }
 
-  @Get('getFormSchema')
-  getFormSchema(@Query('id') id: number): ResponseDataFormat {
-    return this.demoService.getFormSchema(id);
-  }
-
-  @Get('getDetailSchema')
-  getDetailSchema(@Query('id') id: number): ResponseDataFormat {
-    return this.demoService.getDetailSchema(id);
+  @Get('getSchema')
+  getFormSchema(@Query('schemaKey') schemaKey: string): Promise<ResponseDataFormat> {
+    return this.demoService.getSchema(schemaKey);
   }
 
   @Get('getItem')
@@ -40,5 +36,21 @@ export class DemoController {
   @Post('update')
   update(@Body() demo: DemoDto): ResponseDataFormat {
     return this.demoService.update(demo);
+  }
+
+  @Get('schema/list')
+  getSchemaList(): Promise<ResponseDataFormat> {
+    return this.demoService.getSchemaList();
+  }
+
+  @Get('schema/item')
+  getSchemaItem(@Query('id') id: number): Promise<ResponseDataFormat> {
+    return this.demoService.getSchemaItem(id);
+  }
+
+  @Post('schema/save')
+  @UseInterceptors(FileInterceptor('schemaFile'))
+  schemaSave(@UploadedFile() file: Express.Multer.File, @Body() body: SchemaDto): Promise<ResponseDataFormat> {
+    return this.demoService.schemaSave(file, body);
   }
 }

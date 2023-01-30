@@ -2,10 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import responseDataFormat, { ResponseDataFormat } from '../common/responseDataFormat';
-import formAddJson from './databse/form.add.json';
-import formEditJson from './databse/form.edit.json';
-import detailJson from './databse/detail.json';
-import { User } from './entity';
+import { User, Schema } from './entity';
 
 @Injectable()
 export class DemoService {
@@ -14,6 +11,8 @@ export class DemoService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Schema)
+    private readonly schemaRepository: Repository<Schema>,
   ) { }
 
   async getDemo(): Promise<ResponseDataFormat> {
@@ -22,14 +21,9 @@ export class DemoService {
     return responseDataFormat(result);
   }
 
-  getFormSchema(id: number): ResponseDataFormat {
-    const result = { data: id ? formEditJson : formAddJson };
-    return responseDataFormat(result);
-  }
-
-  getDetailSchema(id: number): ResponseDataFormat {
-    const result = { data: detailJson };
-    return responseDataFormat(result);
+  async getSchema(schemaKey: string): Promise<ResponseDataFormat> {
+    const data = await this.schemaRepository.findOne({where: {schemaKey}})
+    return responseDataFormat({data: JSON.parse(data.schemaFile)});
   }
 
   async getItem(id: number): Promise<ResponseDataFormat> {
@@ -57,6 +51,32 @@ export class DemoService {
 
   update(user: User): ResponseDataFormat {
     const result: any = this.userRepository.update(user.id, user);
+    return responseDataFormat(result);
+  }
+
+  async getSchemaList(): Promise<ResponseDataFormat> {
+    const [items, total] = await this.schemaRepository.findAndCount();
+    const result = { data: {items, total, current: 1, pageSize: 10} };
+    return responseDataFormat(result);
+  }
+
+  async getSchemaItem(id: number): Promise<ResponseDataFormat> {
+    const data = await this.schemaRepository.findOne({where: {id}})
+    return responseDataFormat({data});
+  }
+
+  async schemaSave(file: Express.Multer.File, schema: Schema): Promise<ResponseDataFormat> {
+    const isExist = await this.schemaRepository.exist({where: {schemaKey: schema.schemaKey}})
+    let result;
+    if(isExist) {
+      result = { code: -1, data: null, message: "Schema Key重复" }
+    } else {
+      result = this.schemaRepository.save({
+        ...schema, 
+        schemaFile: file.buffer.toString(),
+        schemaFileName: file.originalname
+      });
+    }
     return responseDataFormat(result);
   }
 }
