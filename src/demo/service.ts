@@ -32,8 +32,8 @@ export class DemoService {
   }
 
   delete(ids: number[]): ResponseDataFormat {
-    ids.forEach((id: number) => {
-      this.userRepository.query(`delete from user where id = ${id}`)
+    ids.forEach(async (id: number) => {
+      await this.userRepository.query(`delete from user where id = ${id}`)
     })
     return responseDataFormat({data: null});
   }
@@ -49,8 +49,8 @@ export class DemoService {
     return responseDataFormat(result);
   }
 
-  update(user: User): ResponseDataFormat {
-    const result: any = this.userRepository.update(user.id, user);
+  async update(user: User): Promise<ResponseDataFormat> {
+    const result: any = await this.userRepository.update(user.id, user);
     return responseDataFormat(result);
   }
 

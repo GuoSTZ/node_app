@@ -34,7 +34,7 @@ export class DemoController {
   }
 
   @Post('update')
-  update(@Body() demo: DemoDto): ResponseDataFormat {
+  update(@Body() demo: DemoDto): Promise<ResponseDataFormat> {
     return this.demoService.update(demo);
   }
 
