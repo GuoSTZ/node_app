@@ -16,8 +16,8 @@ describe('DemoController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(controller.getDemo().code).toBe(0);
+    it('should return "Hello World!"', async () => {
+      expect((await controller.getDemo()).code).toBe(0);
     });
   });
 });
