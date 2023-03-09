@@ -4,7 +4,7 @@ import { DemoService } from './service';
 import { ResponseDataFormat } from '../common/responseDataFormat';
 import { DemoDto, DemoDeleteParams, SchemaDto } from './dto';
 
-@Controller('demo')
+@Controller('gs/demo')
 export class DemoController {
   constructor(private readonly demoService: DemoService) { }
 

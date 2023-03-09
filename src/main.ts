@@ -9,7 +9,7 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   
-  const port = 3000;
+  const port = 1446;
   await app.listen(port);
 
   console.log(`当前运行环境：http://localhost:${port}`)

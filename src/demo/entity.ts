@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class User {
+export class Person {
   @PrimaryGeneratedColumn({
     comment: "自增id"
   })

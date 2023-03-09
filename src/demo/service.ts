@@ -2,15 +2,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import responseDataFormat, { ResponseDataFormat } from '../common/responseDataFormat';
-import { User, Schema } from './entity';
+import { Person, Schema } from './entity';
 
 @Injectable()
 export class DemoService {
   private readonly logger = new Logger(DemoService.name);
 
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectRepository(Person)
+    private readonly userRepository: Repository<Person>,
     @InjectRepository(Schema)
     private readonly schemaRepository: Repository<Schema>,
   ) { }
@@ -38,7 +38,7 @@ export class DemoService {
     return responseDataFormat({ data: null });
   }
 
-  async save(user: User): Promise<ResponseDataFormat> {
+  async save(user: Person): Promise<ResponseDataFormat> {
     const isExist = await this.userRepository.exist({ where: { name: user.name } })
     let result;
     if (isExist) {
@@ -49,7 +49,7 @@ export class DemoService {
     return responseDataFormat(result);
   }
 
-  async update(user: User): Promise<ResponseDataFormat> {
+  async update(user: Person): Promise<ResponseDataFormat> {
     const result: any = await this.userRepository.update(user.id, user);
     return responseDataFormat(result);
   }
