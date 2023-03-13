@@ -4,7 +4,6 @@ export class CreateUserDto {
   id: number;
   @IsNotEmpty()
   username: string; // 用户名
-  nickname: string;  //昵称
   @IsNotEmpty()
   password: string;  // 密码
   avatar: string;   //头像

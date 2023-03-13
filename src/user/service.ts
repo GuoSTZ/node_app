@@ -78,7 +78,10 @@ export class UserService {
       return responseDataFormat(result);
     }
 
-    const newUser = await this.userRepository.create(createUser)
-    return await this.userRepository.save(newUser);
+    await this.userRepository.save(createUser);
+    return responseDataFormat({
+      code: 0,
+      message: "注册成功"
+    });
   }
 }

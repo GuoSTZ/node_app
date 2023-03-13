@@ -10,9 +10,6 @@ export class User {
   @Column({ length: 100 })
   username: string; // 用户名
 
-  @Column({ length: 100, nullable: true })
-  nickname: string;  //昵称
-
   @Exclude()
   @Column()
   password: string;  // 密码
